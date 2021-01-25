@@ -7,7 +7,7 @@ Docker dev environments.
 Houston sets up a local Docker-based dev environment per project. Requires Docker.
 
 ```bash
-composer require stuntrocket/houston
+composer require withoutfanfare/houston
 
 # Publish files and folders
 composer run publish

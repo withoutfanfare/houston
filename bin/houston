@@ -21,6 +21,8 @@ CONTAINER_NODE="node"
 
 UNAMEOUT="$(uname -s)"
 
+VENDORNAME="withoutfanfare"
+APPNAME="houston"
 
 #
 # Create base docker-compose command to run
@@ -38,9 +40,9 @@ COMPOSE="docker-compose"
 #
 publishComposeConfig() {
    if [ -f ./docker-compose.yml ]; then
-      cp vendor/stuntrocket/houston/templates/docker-compose.yml ./docker-compose.houston.yml
+      cp vendor/$VENDORNAME/$APPNAME/templates/docker-compose.yml ./docker-compose.houston.yml
    else
-      cp vendor/stuntrocket/houston/templates/docker-compose.yml ./docker-compose.yml 
+      cp vendor/$VENDORNAME/$APPNAME/templates/docker-compose.yml ./docker-compose.yml 
    fi
 }
 
@@ -53,9 +55,9 @@ publishComposeConfig() {
 #
 publishEnvConfig() {
    if [ -f ./.env ]; then
-       cp vendor/stuntrocket/houston/templates/.env.example ./.env.houston.example
+       cp vendor/$VENDORNAME/$APPNAME/templates/.env.example ./.env.houston.example
     else
-       cp vendor/stuntrocket/houston/templates/.env.example ./.env
+       cp vendor/$VENDORNAME/$APPNAME/templates/.env.example ./.env
     fi
 }
 
@@ -68,7 +70,7 @@ publishEnvConfig() {
 #
 publishRuntimes() {
    mkdir docker 
-   cp -r vendor/stuntrocket/houston/runtimes/* ./docker/ 
+   cp -r vendor/$VENDORNAME/$APPNAME/runtimes/* ./docker/ 
    # TODO: find and replace context in docker-compose.yml 
    # to use ./docker instead of vendor/ runtime
 }
