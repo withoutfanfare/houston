@@ -1,0 +1,8 @@
+.DS_Store
+.vscode/
+.idea/*
+vendor/
+composer.lock
+.env
+/docker/*
+/docker-compose.yml
