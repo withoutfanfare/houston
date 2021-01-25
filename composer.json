@@ -1,13 +1,13 @@
 {
-  "name": "stuntrocket/houston",
+  "name": "withoutfanfare/houston",
   "description": "Quickstart Docker environment",
   "type": "library",
   "license": "MIT",
-  "version": "1.0.4",
+  "version": "1.0.0",
   "authors": [
     {
       "name": "DannyHarding",
-      "email": "danny@stuntrocket.co",
+      "email": "hello@stuntrocket.co",
       "role": "Developer"
     }
   ],
