@@ -12,11 +12,9 @@
     }
   ],
   "support": {
-    "source": "https://github.com/stuntrocket/houston"
+    "source": "https://github.com/withoutfanfare/houston.git"
   },
-  "require": {
-    "php": "^7.3|^7.4|^8.0"
-  },
+  "require": {},
   "bin": [
     "bin/houston"
   ],
