@@ -1,0 +1,41 @@
+{
+  "name": "stuntrocket/houston",
+  "description": "Quickstart Docker environment",
+  "type": "library",
+  "license": "MIT",
+  "version": "1.0.4",
+  "authors": [
+    {
+      "name": "DannyHarding",
+      "email": "danny@stuntrocket.co",
+      "role": "Developer"
+    }
+  ],
+  "support": {
+    "source": "https://github.com/stuntrocket/houston"
+  },
+  "require": {
+    "php": "^7.3|^7.4|^8.0"
+  },
+  "bin": [
+    "bin/houston"
+  ],
+  "autoload": {
+    "psr-4": {
+      "Houston\\": "src/"
+    }
+  },
+  "scripts": {
+    "post-update-cmd": [],
+    "publish": [
+      "Houston\\Helper::publish"
+    ]
+  },
+  "config": {
+    "optimize-autoloader": true,
+    "preferred-install": "dist",
+    "sort-packages": true
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true
+}
