@@ -4,6 +4,9 @@ services:
     extends:
       file: docker-compose.base.yml
       service: app.test
+    depends_on:
+      - mysql
+      - redis
     restart: unless-stopped
   node:
     extends:

@@ -16,9 +16,6 @@ services:
       - .:/var/www/html
     networks:
       - houstonnetwork
-    depends_on:
-      - mysql
-      - redis
       # - selenium
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost"]
