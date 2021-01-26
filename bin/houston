@@ -329,13 +329,13 @@ if [ "$1" == "php" ]; then
 # Edit .env file to set correct hostnames for mysql/redis
  elif [ "$1" == "init" ]; then
  
-     echo "HOUSTON: Initialising..."
+     echo -e "HOUSTON: ${COL_CYAN}Initialise${COL_RESET}..."
  
      COMPOSER=$(which composer)
 
      if [ ! -f .env ]; then
          echo -e "No ${COL_MAGENTA}.env${COL_RESET} file found within current working directory $(pwd)"
-         echo "Create a .env file before re-initialising"
+         echo -e "Create a ${COL_MAGENTA}.env${COL_RESET} file before re-initialising"
          exit 0
      fi
 
@@ -371,8 +371,8 @@ if [ "$1" == "php" ]; then
      fi
 
      echo ""
-     echo "HOUSTON: ${COL_LGREEN}Ready for takeoff.${COL_RESET}"
-     echo "Run: ${COL_CYAN}./vendor/bin/houston launch${COL_RESET}"
+     echo -e "HOUSTON: ${COL_LGREEN}Ready for takeoff.${COL_RESET}"
+     echo -e "Run: ${COL_CYAN}./vendor/bin/houston launch${COL_RESET}"
     
 
 # Start up containers
