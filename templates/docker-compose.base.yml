@@ -1,0 +1,37 @@
+version: "3.9"
+services:
+  app.test:
+    build:
+      # context: ./docker/7.4
+      context: ./vendor/withoutfanfare/houston/runtimes/7.4
+      dockerfile: Dockerfile
+    image: houston-7.4/php
+    volumes:
+      - .:/var/www/html
+    networks:
+      - docker-network
+  node:
+    build:
+      context: ./vendor/withoutfanfare/houston/runtimes/node
+      dockerfile: Dockerfile
+    image: node
+    volumes:
+      - .:/var/www/html
+    networks:
+      - docker-network
+  mysql:
+    image: "${DB_IMAGE}"
+    volumes:
+      - mysqldata:/var/lib/mysql
+    networks:
+      - docker-network
+  redis:
+    image: redis:alpine
+    volumes:
+      - redisdata:/data
+    networks:
+      - docker-network
+  mailhog:
+    image: mailhog/mailhog:latest
+    networks:
+      - docker-network

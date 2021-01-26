@@ -29,7 +29,18 @@ APPNAME="houston"
 #
 #
 #
-COMPOSE="docker-compose"
+COMPOSE_FILE="dev"
+# COMPOSE="docker-compose"
+
+# Disable pseudo-TTY allocation for CI (Jenkins)
+TTY=""
+
+if [ ! -z "$BUILD_NUMBER" ]; then
+    COMPOSE_FILE="ci"
+    TTY="-T"
+fi
+
+COMPOSE="docker-compose -f docker-compose.$COMPOSE_FILE.yml"
 
 
 
@@ -40,10 +51,13 @@ COMPOSE="docker-compose"
 #
 publishComposeConfig() {
    if [ -f ./docker-compose.yml ]; then
-      cp vendor/$VENDORNAME/$APPNAME/templates/docker-compose.yml ./docker-compose.houston.yml
-   else
-      cp vendor/$VENDORNAME/$APPNAME/templates/docker-compose.yml ./docker-compose.yml 
+      cp ./docker-compose.yml ./docker-compose.yml.bak
    fi
+   
+   cp vendor/$VENDORNAME/$APPNAME/templates/docker-compose.base.yml ./docker-compose.base.yml 
+   cp vendor/$VENDORNAME/$APPNAME/templates/docker-compose.dev.yml ./docker-compose.dev.yml 
+   cp vendor/$VENDORNAME/$APPNAME/templates/docker-compose.ci.yml ./docker-compose.ci.yml
+   
 }
 
 

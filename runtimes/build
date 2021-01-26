@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+docker build -f app/Dockerfile -t stuntrocket/phpapp:latest ./app
+docker build -f node/Dockerfile -t node:latest ./node
