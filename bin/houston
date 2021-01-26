@@ -98,7 +98,7 @@ publishRuntimes() {
 #
 publishStubs() {
     intro="${COL_CYAN}Publish Files\n${COL_RESET}"
-    printf "$intro"    
+    echo -e "$intro"    
     publishRuntimes
 }
 
@@ -112,7 +112,7 @@ publishStubs() {
 showVersion() {
     intro="\n${COL_GREEN}Houston${COL_RESET} {COL_CYAN}Docker${COL_RESET}\n"
     intro="$intro   ${COL_CYAN}Version ${VERSION}\n${COL_RESET}"
-    printf "$intro"
+    echo -e "$intro"
 }
 
 
@@ -203,7 +203,7 @@ Darwin*)            MACHINE=mac;;
 esac
 
 if [ "$MACHINE" == "UNKNOWN" ]; then
-    echo "Unsupported operating system [$(uname -s)]. Laravel Sail supports macOS, Linux, and Windows (WSL2)." >&2
+    echo "Unsupported operating system [$(uname -s)]. Houston supports macOS, Linux, and Windows (WSL2)." >&2
     exit 1
 fi
 
@@ -255,7 +255,7 @@ fi
 
 
 function warn_down {
-    echo -e "${WHITE}Sail is not running.${NC}" >&2
+    echo -e "${WHITE}Houston is not running.${NC}" >&2
     echo "" >&2
     echo -e "${WHITE}Use Houston with the following commands:${NC} './vendor/bin/houston up' or './vendor/bin/houston up -d'" >&2
     exit 1
