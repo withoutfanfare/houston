@@ -20,7 +20,7 @@ networks:
   houstonnetwork:
     driver: "bridge"
 volumes:
-  mysqldata:
+  houstonmysql:
     driver: "local"
-  redisdata:
+  houstonredis:
     driver: "local"
