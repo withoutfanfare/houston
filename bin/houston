@@ -23,6 +23,7 @@ UNAMEOUT="$(uname -s)"
 
 VENDORNAME="withoutfanfare"
 APPNAME="houston"
+BINNAME="houston"
 
 #
 # Create base docker-compose command to run
@@ -124,8 +125,8 @@ showHelp() {
     commands="$commands  logs <container> < -f >     Displays all logs for <container> and optionally tail\n"
     commands="$commands  npm                         Execute npm command using ${COL_MAGENTA}${CONTAINER_NODE}${COL_RESET} container\n"
     commands="$commands  ps                          Display list of all running containers in current directory\n"
-    commands="$commands  launch < -l >               Starts all containers defined in ${COL_LGREEN}docker-compose.yml${COL_RESET} file\n"
-    commands="$commands  land                        Stops all containers defined in ${COL_LGREEN}docker-compose.yml${COL_RESET} file\n"
+    commands="$commands  start < -l >               Starts all containers defined in ${COL_LGREEN}docker-compose.yml${COL_RESET} file\n"
+    commands="$commands  stop                        Stops all containers defined in ${COL_LGREEN}docker-compose.yml${COL_RESET} file\n"
     commands="$commands  test [params]               Runs PHPUnit using supplied options in ${COL_MAGENTA}${CONTAINER_APP}${COL_RESET} container\n"
     commands="$commands  tinker                      Runs Tinker in ${COL_MAGENTA}${CONTAINER_APP}${COL_RESET} container\n"
     commands="$commands  npm <options>               Runs npm using supplied options in ${COL_MAGENTA}${CONTAINER_NODE}${COL_RESET} container\n"
@@ -137,8 +138,8 @@ showHelp() {
     options="$options --version, -V, version       Show Version\n"
 
     examples="${COL_LYELLOW}Examples:\n${COL_RESET}"
-    examples="$examples  ${COL_CYAN}$ ./vendor/bin/houston launch${COL_RESET}\n"
-    examples="$examples  ${COL_CYAN}$ ./vendor/bin/houston land${COL_RESET}\n"
+    examples="$examples  ${COL_CYAN}$ ./vendor/bin/houston start${COL_RESET}\n"
+    examples="$examples  ${COL_CYAN}$ ./vendor/bin/houston stop${COL_RESET}\n"
     examples="$examples  ${COL_CYAN}$ ./vendor/bin/houston dump${COL_RESET}\n"
     examples="$examples  ${COL_CYAN}$ ./vendor/bin/houston logs # all container logs${COL_RESET}\n"
     examples="$examples  ${COL_CYAN}$ ./vendor/bin/houston composer require <vendor/package>${COL_RESET}\n"
@@ -270,6 +271,9 @@ export APP_PORT=${APP_PORT:-80}
 export APP_SERVICE=${APP_SERVICE:-"houston.test"}
 
 export DB_PORT=${DB_PORT:-3306}
+export DB_USERNAME=${DB_USERNAME:-"root"}
+export DB_PASSWORD=${DB_PASSWORD:-""}
+export DB_DATABASE=${DB_DATABASE:-"app"}
 
 export WWWUSER=${WWWUSER:-$UID}
 export WWWGROUP=${WWWGROUP:-$(id -g)}
@@ -362,11 +366,11 @@ if [ "$1" == "php" ]; then
     
 
 # Start up containers
-elif [ "$1" == "launch" ]; then
+elif [ "$1" == "start" ]; then
     $COMPOSE up -d
 
 # Stop the containers
-elif [ "$1" == "land" ]; then
+elif [ "$1" == "stop" ]; then
     $COMPOSE down
 
 # Proxy Composer commands to the "composer" binary on the application container...
@@ -375,12 +379,13 @@ elif [ "$1" == "composer" ]; then
 
     if [ "$EXEC" == "yes" ]; then
         $COMPOSE exec \
-            -u houston \
+            -u "$BINNAME" \
             "$APP_SERVICE" \
             composer "$@"
     else
         warn_down
     fi
+
 
 # Proxy Artisan commands to the "artisan" binary on the application container...
 elif [ "$1" == "artisan" ] || [ "$1" == "art" ]; then
@@ -388,25 +393,36 @@ elif [ "$1" == "artisan" ] || [ "$1" == "art" ]; then
 
     if [ "$EXEC" == "yes" ]; then
         $COMPOSE exec \
-            -u houston \
+            -u "$BINNAME" \
             "$APP_SERVICE" \
             php artisan "$@"
     else
         warn_down
     fi
 
+
 # Proxy the "test" command to the "php artisan test" Artisan command...
 elif [ "$1" == "test" ]; then
     shift 1
-
     if [ "$EXEC" == "yes" ]; then
-        $COMPOSE exec \
-            -u houston \
-            "$APP_SERVICE" \
-            php artisan test "$@"
+       $COMPOSE exec \
+           -u "$BINNAME" \
+           "$APP_SERVICE" \
+           ./vendor/bin/phpunit "$@"
     else
-        warn_down
+       $COMPOSE run --rm \
+           "$APP_SERVICE" \
+           ./vendor/bin/phpunit "$@"
     fi
+    # if [ "$EXEC" == "yes" ]; then
+    #     $COMPOSE exec \
+    #         -u houston \
+    #         "$APP_SERVICE" \
+    #         php artisan test "$@"
+    # else
+    #     warn_down
+    # fi
+
 
 # Proxy the "dusk" command to the "php artisan dusk" Artisan command...
 elif [ "$1" == "dusk" ]; then
@@ -414,8 +430,8 @@ elif [ "$1" == "dusk" ]; then
 
     if [ "$EXEC" == "yes" ]; then
         $COMPOSE exec \
-            -u houston \
-            -e "APP_URL=http://houston.test" \
+            -u "$BINNAME" \
+            -e "APP_URL=http://localhost" \
             -e "DUSK_DRIVER_URL=http://selenium:4444/wd/hub" \
             "$APP_SERVICE" \
             php artisan dusk "$@"
@@ -423,18 +439,20 @@ elif [ "$1" == "dusk" ]; then
         warn_down
     fi
 
+
 # Initiate a Laravel Tinker session within the application container...
 elif [ "$1" == "tinker" ] ; then
     shift 1
 
     if [ "$EXEC" == "yes" ]; then
         $COMPOSE exec \
-            -u houston \
+            -u "$BINNAME" \
             "$APP_SERVICE" \
             php artisan tinker
     else
         warn_down
     fi
+
 
 # Proxy Node commands to the "node" binary on the application container...
 elif [ "$1" == "node" ]; then
@@ -442,12 +460,13 @@ elif [ "$1" == "node" ]; then
 
     if [ "$EXEC" == "yes" ]; then
         $COMPOSE exec \
-            -u houston \
+            -u "$BINNAME" \
             "$APP_SERVICE" \
             node "$@"
     else
         warn_down
     fi
+
 
 # Proxy NPM commands to the "npm" binary on the application container...
 elif [ "$1" == "npm" ]; then
@@ -455,12 +474,13 @@ elif [ "$1" == "npm" ]; then
 
     if [ "$EXEC" == "yes" ]; then
         $COMPOSE exec \
-            -u houston \
+            -u "$BINNAME" \
             "$APP_SERVICE" \
             npm "$@"
     else
         warn_down
     fi
+
 
 # Proxy NPX commands to the "npx" binary on the application container...
 elif [ "$1" == "npx" ]; then
@@ -468,12 +488,13 @@ elif [ "$1" == "npx" ]; then
 
     if [ "$EXEC" == "yes" ]; then
         $COMPOSE exec \
-            -u houston \
+            -u "$BINNAME" \
             "$APP_SERVICE" \
             npx "$@"
     else
         warn_down
     fi
+
 
 # Proxy YARN commands to the "yarn" binary on the application container...
 elif [ "$1" == "yarn" ]; then
@@ -481,12 +502,13 @@ elif [ "$1" == "yarn" ]; then
 
     if [ "$EXEC" == "yes" ]; then
         $COMPOSE exec \
-            -u houston \
+            -u "$BINNAME" \
             "$APP_SERVICE" \
             yarn "$@"
     else
         warn_down
     fi
+
 
 # Initiate a MySQL CLI terminal session within the "mysql" container...
 elif [ "$1" == "mysql" ]; then
@@ -500,13 +522,27 @@ elif [ "$1" == "mysql" ]; then
         warn_down
     fi
 
+
+# Initiate a mysqladmin session within the "mysql" container...
+elif [ "$1" == "mysqladmin" ]; then
+    shift 1
+
+    if [ "$EXEC" == "yes" ]; then
+        $COMPOSE exec \
+            mysql \
+            bash -c "MYSQL_PWD=${MYSQL_ROOT_PASSWORD} mysqladmin -u ${MYSQL_USER} $@"
+    else
+        warn_down
+    fi
+
+
 # Initiate a Bash shell within the application container...
 elif [ "$1" == "shell" ] || [ "$1" == "bash" ]; then
     shift 1
 
     if [ "$EXEC" == "yes" ]; then
         $COMPOSE exec \
-            -u houston \
+            -u "$BINNAME" \
             "$APP_SERVICE" \
             bash
     else
@@ -524,6 +560,24 @@ elif [ "$1" == "root-shell" ] ; then
     else
         warn_down
     fi
+    
+# If "ssh" is used, pass-thru to "ssh"
+ # inside a new container
+ # e.g.: ./vessel ssh app
+ # e.g.: ./vessel ssh mysql
+ elif [ "$1" == "ssh" ]; then
+     shift 1
+     if [ "$EXEC" == "yes" ] && [ "$1" != "node" ]; then
+         $COMPOSE exec \
+             -u "$BINNAME" \
+             $1 \
+             bash
+     else
+         $COMPOSE run --rm \
+             $1 \
+             bash
+     fi
+    
 
 # If "dump" is used, run mysqldump
 # from our mysql container
