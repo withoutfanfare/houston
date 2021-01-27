@@ -45,6 +45,7 @@ RUN setcap "cap_net_bind_service=+ep" /usr/bin/php7.4
 RUN groupadd --force -g $WWWGROUP houston
 RUN useradd -ms /bin/bash --no-user-group -g $WWWGROUP -u 1337 houston
 
+COPY default /etc/nginx/sites-available/default
 COPY start-container /usr/local/bin/start-container
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 COPY php.ini /etc/php/7.4/cli/conf.d/99-houston.ini
