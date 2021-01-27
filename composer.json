@@ -3,7 +3,7 @@
   "description": "Quickstart Docker environment",
   "type": "library",
   "license": "MIT",
-  "version": "1.0.4",
+  "version": "1.0.1",
   "authors": [
     {
       "name": "DannyHarding",
